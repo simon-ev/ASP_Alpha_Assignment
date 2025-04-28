@@ -53,7 +53,7 @@ app.MapStaticAssets();
 app.UseRewriter(new RewriteOptions().AddRedirect("^$", "/admin/overview"));
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Overview}/{action=Index}/{id?}")
+    pattern: "{controller=Projects}/{action=Index}/{id?}")
     .WithStaticAssets();
 
 

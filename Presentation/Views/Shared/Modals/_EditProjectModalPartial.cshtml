@@ -1,0 +1,73 @@
+﻿<section id="edit-project-modal" class="modal">
+    <div class="add-project-container">
+        <div class="add-project-header">
+            <h3>Edit Project</h3>
+            <button data-type="close" data-target="#edit-project-modal" class="modal-button button-close">
+                <img class="x-mark" src="~/images/xmark-solid.svg" alt="Close" />
+            </button>
+        </div>
+
+        <img class="large-logo" src="~/images/AlphaLogoLarge.svg" alt="Large Alpha Logo" />
+
+        <form asp-controller="" asp-action="" method="post" novalidate class="add-project-form">
+            <label for="edit-project-name">Project Name</label>
+            <input type="text" id="edit-project-name" placeholder="Project Name" />
+
+            <label for="edit-client-name">Client Name</label>
+            <input type="text" id="edit-client-name" placeholder="Client Name" />
+
+            <label for="edit-description">Description</label>
+            <textarea id="edit-project-description" name="description" class="form-textarea" placeholder="Type something"></textarea>
+            <div id="edit-project-description-wysiwyg-editor" class="wysiwyg-editor"></div>
+
+            <div id="edit-project-description-wysiwyg-toolbar" class="wysiwyg-toolbar">
+                <button type="button" class="toolbar-btn" data-format="bold">
+                    <img src="~/images/toolbar/type-bold.svg" alt="Bold" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="italic">
+                    <img src="~/images/toolbar/type-italic.svg" alt="Italic" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="underline">
+                    <img src="~/images/toolbar/type-underline.svg" alt="Underline" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="align" data-value="left">
+                    <img src="~/images/toolbar/text-left.svg" alt="Align Left" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="align" data-value="center">
+                    <img src="~/images/toolbar/text-center.svg" alt="Align Center" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="align" data-value="right">
+                    <img src="~/images/toolbar/text-right.svg" alt="Align Right" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="list" data-value="bullet">
+                    <img src="~/images/toolbar/list-ul.svg" alt="Bullet List" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="list" data-value="ordered">
+                    <img src="~/images/toolbar/list-ol.svg" alt="Ordered List" />
+                </button>
+                <button type="button" class="toolbar-btn" data-format="link">
+                    <img src="~/images/toolbar/link-45deg.svg" alt="Insert Link" />
+                </button>
+            </div>
+
+            <div class="date-container">
+                <div>
+                    <label for="edit-start-date">Start Date</label>
+                    <input type="date" id="edit-start-date" />
+                </div>
+                <div>
+                    <label for="edit-end-date">End Date</label>
+                    <input type="date" id="edit-end-date" />
+                </div>
+            </div>
+
+            <label for="edit-budget">Budget</label>
+            <div class="budget-container">
+                <span>$</span>
+                <input type="number" id="edit-budget" placeholder="0" />
+            </div>
+
+            <button type="submit" class="button-big">Save Changes</button>
+        </form>
+    </div>
+</section>

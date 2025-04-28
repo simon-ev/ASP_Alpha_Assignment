@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Alpha</title>
+    <script type="importmap"></script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
+    
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    @* Formaterad av Chatgpt *@
+    <div class="portal">
+        <div class="alpha-logo">
+            <img src="~/images/AlphaLogo.svg" alt="Alpha Logo" />
+        </div>
+
+        <div class="side">
+            @await Html.PartialAsync("_SidebarPartial")
+        </div>
+
+        <div class="top">
+            @await Html.PartialAsync("_TopNavPartial")
+        </div>
+
+        <div class="main">
+            <div class="project-bar">
+                <h1>Projects</h1>
+                <button type="button" class="button-secondary" data-type="modal" data-modal-open="#add-project-modal">+ Add Project</button>
+            </div>
+
+            <div class="project-sorting">
+                <p class="tab active" id="all-tab">ALL []</p>
+                <p class="tab" id="started-tab">STARTED []</p>
+                <p class="tab" id="completed-tab">COMPLETED []</p>
+            </div>
+
+            <div class="project-view" id="projects">
+                @RenderBody()
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay hidden">
+        @await Html.PartialAsync("_AddProjectModalPartial")
+        @await Html.PartialAsync("_EditProjectModalPartial")
+    </div>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
