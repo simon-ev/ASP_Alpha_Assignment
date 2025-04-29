@@ -1,0 +1,42 @@
+﻿@model SignUpViewModel
+
+@{
+    Layout = "_CenterWrapperLayout";
+    ViewData["Title"] = "Create Account";
+}
+
+<div id="signup" class="login-container-popup">
+    <h1>Create Account</h1>
+    <form method="post" asp-controller="Auth" asp-action="SignUp" novalidate>
+        <div>
+            <label asp-for="FullName" class="login-text">Full Name</label>
+            <input type="text" asp-for="FullName" />
+            <span asp-validation-for="FullName"></span>
+        </div>
+        <div>
+            <label asp-for="Email" class="login-text">Email</label>
+            <input type="email" asp-for="Email" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div>
+            <label asp-for="Password" class="login-text">Password</label>
+            <input type="password" asp-for="Password" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div>
+            <label asp-for="ConfirmPassword" class="login-text">Confirm Password</label>
+            <input type="password" asp-for="ConfirmPassword" />
+            <span asp-validation-for="ConfirmPassword"></span>
+        </div>
+        <div class="checkbox-container">
+            <input asp-for="TermsAndConditions" type="checkbox" class="tac" required />
+            <label asp-for="TermsAndConditions">I accept <a href="#" class="terms-link"> Terms and Conditions</a></label>
+
+        </div>
+
+        <button type="submit" class="button-big">Create Account</button>
+
+    </form>
+    <p class="login-bottom">Already have an account? <a asp-controller="Auth" asp-action="Login" class="terms-link">Login</a></p>
+</div>
+

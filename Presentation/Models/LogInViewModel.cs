@@ -2,7 +2,7 @@
 
 namespace Presentation.Models;
 
-public class SignInViewModel
+public class LogInViewModel
 {
     [Required]
     [RegularExpression(@"")]
@@ -16,5 +16,5 @@ public class SignInViewModel
     [DataType(DataType.Password)]
     public string Password { get; set; } = null!;
 
-    public bool isPersistent { get; set; } 
+    public bool IsPersistent { get; set; } 
 }

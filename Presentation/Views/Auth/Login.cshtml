@@ -1,0 +1,32 @@
+﻿@model LogInViewModel
+
+@{
+    Layout = "_CenterWrapperLayout";
+    ViewData["Title"] = "Log In";
+}
+
+
+<div id="login-form" class="login-container-popup hidden">
+    <h1>Login</h1>
+    <form method="post" asp-controller="Auth" asp-action="Login" novalidate>
+        <div>
+            <label asp-for="Email" class="login-text">Email</label>
+            <input type="email" asp-for="Email" class="input-field" />
+            <span asp-validation-for="Email"></span>
+        </div>
+        <div>
+            <label asp-for="Password" class="login-text">Password</label>
+            <input type="password" asp-for="Password" class="input-field" />
+            <span asp-validation-for="Password"></span>
+        </div>
+        <div class="checkbox-container">
+            <input asp-for="IsPersistent" type="checkbox" class="tac" />
+            <label asp-for="IsPersistent">Remember Me</label>
+        </div>
+
+
+        <button type="submit" class="button-big">Log In</button>
+    </form>
+    <p class="login-bottom">Don’t have an account? <a asp-controller="Auth" asp-action="SignUp" class="terms-link">Sign Up</a></p>
+</div>
+

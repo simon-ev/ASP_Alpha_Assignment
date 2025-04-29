@@ -1,34 +1,18 @@
-﻿@{
+﻿@model ProjectsViewModel
+@{
     ViewData["Title"] = "Projects";
+
 }
 
 <div class="project-view" id="projects">
-    <div class="project-cards">
-        <div class="card-info-container">
-            <img src="~/images/ProjectLogo.svg" alt="">
-            <div>
-                <h6>ProjectName</h6>
-                <p class="project-owner">ProjectOwner</p>
-            </div>
-            <div class="dots">
-                <img src="~/images/ContextDots.svg" alt=""/>
-                <div class="context-menu hidden">
-                    <div class="context-container">
-                        <button class="context-item">
-                            <img class="context-menu-one" src="~images/pencil-fill.svg" alt="Edit Icon"/> Edit
-                        </button>
-                        <button class="context-item delete">
-                            <img class="context-menu-one" src="~images/trash-fill.svg" alt="Delete Icon"/> Delete Project
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="project-description">
-                <p>Lorem, ipsum dolor sit amet consectetur adipisicing elit. </p>
-            </div>
-        </div>
-    </div>
+    @if (Model.Projects != null && Model.Projects.Any())
+    {
+        @foreach (var project in Model.Projects)
+        {
+            @await Html.PartialAsync("ListItems/_ProjectListItemPartial", project)
+        }
+    }
 </div>
 
-@await Html.PartialAsync("Modals/_AddProjectModalPartial")
-@await Html.PartialAsync("Modals/_EditProjectModalPartial")
+@await Html.PartialAsync("Modals/_AddProjectModalPartial", Model.AddProjectFormData)
+@await Html.PartialAsync("Modals/_EditProjectModalPartial", Model.EditProjectFormData)

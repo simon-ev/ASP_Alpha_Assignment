@@ -506,6 +506,10 @@ button {
         background-color: var(--context-button);
     }
 
+.dropdown-button {
+    height: 26px;
+}
+
 .context-container {
     display: flex;
     flex-direction: column;

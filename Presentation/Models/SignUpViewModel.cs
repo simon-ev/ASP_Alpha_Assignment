@@ -5,23 +5,18 @@ namespace Presentation.Models;
 public class SignUpViewModel
 {
     [Required]
-    [Display(Name = "First Name", Prompt = "Enter first name")]
+    [Display(Name = "Full Name", Prompt = "Enter full name")]
     [DataType(DataType.Text)]
-    public string FirstName { get; set; } = null!;
+    public string FullName { get; set; } = null!;
 
     [Required]
-    [Display(Name = "Last Name", Prompt = "Enter last name")]
-    [DataType(DataType.Text)]
-    public string LastName { get; set; } = null!;
-
-    [Required]
-    [RegularExpression(@"")]
+    [RegularExpression("^$", ErrorMessage = "Invalid email")]
     [Display(Name = "Email", Prompt = "Enter email address")]
     [DataType(DataType.EmailAddress)]
     public string Email { get; set; } = null!;
 
     [Required]
-    [RegularExpression(@"")]
+    [RegularExpression("^$", ErrorMessage = "Invalid password")]
     [Display(Name = "Password", Prompt = "Enter password")]
     [DataType(DataType.Password)]
     public string Password { get; set; } = null!;

@@ -1,0 +1,29 @@
+﻿@model ProjectViewModel
+
+<div class="project-cards" data-project-id="@Model.Id">
+    <div class="card-info-container">
+        <img src="~/images/ProjectLogo.svg" alt="">
+        <div>
+            <h6>@Model.ProjectName</h6>
+            <p class="project-owner">@Model.ClientName</p>
+        </div>
+        <div class="dots">
+            <button type="button" class="dropdown-button modal-button" data-type="dropdown" data-target="#project-dropdown-@Model.Id">
+                <img src="~/images/ContextDots.svg" alt="" />
+            </button>      
+            <div id="project-dropdown-@Model.Id" class="context-menu hidden">
+                <div class="context-container">
+                    <button class="context-item">
+                        <img class="context-menu-one" src="~images/pencil-fill.svg" alt="Edit Icon" /> Edit
+                    </button>
+                    <button class="context-item delete" asp-action="Delete">
+                        <img class="context-menu-one" src="~images/trash-fill.svg" alt="Delete Icon" /> Delete Project
+                    </button>
+                </div>
+            </div>
+        </div>
+        <div class="project-description">
+            <p>@Html.Raw(Model.Description)</p>
+        </div>
+    </div>
+</div>
