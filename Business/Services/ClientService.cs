@@ -1,13 +1,15 @@
 
 using Data.Repositories;
+using Business.Models;
+using Data.Entities;
 using Data.Models;
 
 
-namespace Data.Services;
+namespace Business.Services;
 
 public interface IClientService 
 {
-    Task<ClientResult> GetClientsAsync();
+    Task<ClientResult> AddClientAsync(string clientName);
 }
 public class ClientService : IClientService
 {
@@ -18,8 +20,27 @@ public class ClientService : IClientService
         _clientRepository = clientRepository;
     }
 
-    public Task<ClientResult> GetClientsAsync()
+    public async Task<ClientResult> AddClientAsync(string clientName)
     {
-        return _clientRepository.GetClientsAsync();
+        if (string.IsNullOrWhiteSpace(clientName))
+        {
+            return new ClientResult
+            {
+                Succeeded = false,
+                StatusCode = 400,
+                Error = "Client name cannot be empty."
+            };
+        }
+
+        var clientEntity = new ClientEntity
+        {
+            Id = Guid.NewGuid().ToString(),
+            ClientName = clientName
+        };
+        var result = await _clientRepository.AddAsync(clientEntity);
+
+        return result.Succeeded
+            ? new ClientResult { Succeeded = true, StatusCode = 201, Result = new[] { new Client { Id = clientEntity.Id, ClientName = clientEntity.ClientName } } }
+            : new ClientResult { Succeeded = false, StatusCode = result.StatusCode, Error = result.Error };
     }
 }

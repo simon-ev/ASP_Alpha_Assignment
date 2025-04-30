@@ -1,4 +1,4 @@
-namespace Data.Models;
+namespace Business.Models;
 
 public class ProjectResult<T> : ServiceResult
 {

@@ -14,10 +14,10 @@
             <div id="project-dropdown-@Model.Id" class="context-menu hidden">
                 <div class="context-container">
                     <button class="context-item">
-                        <img class="context-menu-one" src="~images/pencil-fill.svg" alt="Edit Icon" /> Edit
+                        <img class="context-menu-one" src="~/images/pencil-fill.svg" alt="Edit Icon" /> Edit
                     </button>
-                    <button class="context-item delete" asp-action="Delete">
-                        <img class="context-menu-one" src="~images/trash-fill.svg" alt="Delete Icon" /> Delete Project
+                    <button type="button" class="context-item delete" data-id="@Model.Id">
+                        <img class="context-menu-one" src="~/images/trash-fill.svg" alt="Delete Icon" /> Delete Project
                     </button>
                 </div>
             </div>

@@ -1,7 +1,7 @@
 
 using Data.Models;
 
-namespace Data.Models;
+namespace Business.Models;
 
 public class ClientResult : ServiceResult
 {

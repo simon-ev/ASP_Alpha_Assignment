@@ -2,9 +2,10 @@
 using Data.Models;
 using Data.Entities;
 using Microsoft.AspNetCore.Identity;
-using Azure.Core;
+using Business.Models;
 
-namespace Data.Services;
+
+namespace Business.Services;
 
 public interface IAuthService
 {

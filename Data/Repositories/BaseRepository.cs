@@ -19,6 +19,22 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         _table = context.Set<TEntity>();
     }
 
+    //Skriven av Chatgpt
+    public virtual async Task<RepositoryResult<TEntity>> GetByIdAsync(string id)
+    {
+        try
+        {
+            var entity = await _table.FindAsync(id);
+            return entity == null
+                ? new RepositoryResult<TEntity> { Succeeded = false, StatusCode = 404, Error = "Entity not found." }
+                : new RepositoryResult<TEntity> { Succeeded = true, StatusCode = 200, Result = entity };
+        }
+        catch (Exception ex)
+        {
+            return new RepositoryResult<TEntity> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+        }
+    }
+    //---------------
     public virtual async Task<RepositoryResult<bool>> AddAsync(TEntity entity)
     {
         if (entity == null)
@@ -69,13 +85,14 @@ public abstract class BaseRepository<TEntity> where TEntity : class
 
     public virtual async Task<RepositoryResult<TEntity>> GetAsync
         (
-        bool orderByDescending = false,
         Expression<Func<TEntity, bool>> where,
-        Expression<Func<TEntity, object>>? sortBy = null,
         params Expression<Func<TEntity, object>>[]? includes)
 
     {
+        try
+        {
 
+        
         IQueryable<TEntity> query = _table;
         if (where != null)
             query = query.Where(where);
@@ -93,6 +110,11 @@ public abstract class BaseRepository<TEntity> where TEntity : class
         return entity == null
             ? new RepositoryResult<TEntity> { Succeeded = false, StatusCode = 404, Error = "Entity not found." }
             : new RepositoryResult<TEntity> { Succeeded = true, StatusCode = 200, Result = entity };
+        }
+        catch (Exception ex)
+        {
+            return new RepositoryResult<TEntity> { Succeeded = false, StatusCode = 500, Error = ex.Message };
+        }
     }
 
 

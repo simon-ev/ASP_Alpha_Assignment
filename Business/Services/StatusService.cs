@@ -1,10 +1,10 @@
 using Data.Repositories;
 using Data.Models;
+using Business.Models;
 
-using Data.Models;
 
 
-namespace Data.Services;
+namespace Business.Services;
 
 public interface IStatusService
 {

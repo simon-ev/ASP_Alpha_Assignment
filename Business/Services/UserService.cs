@@ -3,9 +3,10 @@ using Data.Entities;
 using Data.Repositories;
 using Microsoft.AspNetCore.Identity;
 using System.Diagnostics;
+using Business.Models;
 
 
-namespace Data.Services;
+namespace Business.Services;
 
 public interface IUserService
 {
@@ -69,14 +70,20 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
 
         try
         {
-            var userEntity = formData.MapTo<UserEntity>();
+            var userEntity = new UserEntity
+            {
+                Email = formData.Email,
+                UserName = formData.Email, 
+                FullName = formData.FullName
 
-            var result = await _userManager.CreateAsync();
+            };
+
+            var result = await _userManager.CreateAsync(userEntity, formData.Password);
             if (result.Succeeded)
             {
                 var addToRoleResult = await AddUserToRole(userEntity.Id, roleName);
-                
-                return result.Succeeded
+
+                return addToRoleResult.Succeeded
                     ? new UserResult { Succeeded = true, StatusCode = 201 }
                     : new UserResult { Succeeded = false, StatusCode = 201, Error = "User created but not added to role" };
             }

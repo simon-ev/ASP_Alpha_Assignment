@@ -1,8 +1,7 @@
-﻿using System.Threading.Tasks;
-using Data.Models;
-using Data.Services;
+﻿using Data.Models;
+using Business.Services;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.Diagnostics;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Presentation.Models;
 
 namespace Presentation.Controllers;
@@ -14,10 +13,24 @@ public class ProjectsController(IProjectService projectService) : Controller
     public async Task<IActionResult> Index()
     {
 
-        var projects = await _projectService.GetProjectsAsync();
+        var serviceProjects = await _projectService.GetProjectsAsync();
+        if (!serviceProjects.Succeeded)
+        {
+            return View("Error");
+        }
+
         var viewModel = new ProjectsViewModel
         {
-            Projects = SetProjects(),
+           Projects = serviceProjects.Result.Select(p => new ProjectViewModel
+        {
+            Id = p.Id,
+            ProjectName = p.ProjectName,
+            Description = p.Description,
+            StartDate = p.StartDate,
+            EndDate = p.EndDate,
+            Budget = p.Budget,
+            Status = p.Status.StatusName
+        }),
             EditProjectFormData = new EditProjectViewModel
             {
                 Statuses = SetStatuses()
@@ -70,12 +83,18 @@ public class ProjectsController(IProjectService projectService) : Controller
         }
 
         [HttpPost]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            return Json(new { });
+        var success = await _projectService.DeleteProjectAsync(id);
+        if (success)
+        {
+            return Json(new { success = true, id });
         }
 
-    private IEnumerable<SelectListItem> SetStatuses()
+        return Json(new { success = false, message = "Failed to delete project." });
+    }
+
+    public IEnumerable<SelectListItem> SetStatuses()
     {
         var members = new List<SelectListItem>
         {
@@ -90,6 +109,7 @@ public class ProjectsController(IProjectService projectService) : Controller
                 Text = "Completed"
             }
         };
+        return statuses;
     }
 } 
 

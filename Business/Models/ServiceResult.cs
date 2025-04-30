@@ -1,6 +1,6 @@
 
 
-namespace Data.Models;
+namespace Business.Models;
 
 public abstract class ServiceResult 
 {

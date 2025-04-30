@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using Data.Models;
 
-namespace Data.Models;
+namespace Business.Models;
 
 public class UserResult
 {

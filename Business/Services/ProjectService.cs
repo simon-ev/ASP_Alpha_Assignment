@@ -1,22 +1,30 @@
 using Data.Models;
 using Data.Entities;
-using Data.Models;
 using Data.Repositories;
+using Business.Models;
 
-namespace Data.Services;
+namespace Business.Services;
 
 public interface IProjectService
 {
     Task<ProjectResult> CreateProjectAsync(AddProjectFormData formData);
     Task<ProjectResult<Project>> GetProjectAsync(string id);
     Task<ProjectResult<IEnumerable<Project>>> GetProjectsAsync();
+    Task<bool> DeleteProjectAsync(int id);
 }
 
-public class ProjectService(IProjectRepository projectRepository, IStatusService statusService) : IProjectService
+public class ProjectService : IProjectService
 {
-    private readonly IProjectRepository _projectRepository = projectRepository;
-    private readonly IStatusService _statusService = statusService;
+    private readonly IProjectRepository _projectRepository;
+    private readonly IStatusService _statusService;
+    private readonly IClientService _clientService; 
 
+    public ProjectService(IProjectRepository projectRepository, IStatusService statusService, IClientService clientService)
+    {
+        _projectRepository = projectRepository;
+        _statusService = statusService;
+        _clientService = clientService; 
+    }
 
     public async Task<ProjectResult> CreateProjectAsync(AddProjectFormData formData)
     {
@@ -25,6 +33,17 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             return new ProjectResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied." };
         }
 
+        var clientResult = await _clientService.AddClientAsync(formData.ClientId); 
+        if (!clientResult.Succeeded && clientResult.StatusCode != 409)
+        {
+            return new ProjectResult { Succeeded = false, StatusCode = clientResult.StatusCode, Error = clientResult.Error };
+        }
+
+        var client = clientResult.Result?.FirstOrDefault();
+        if (client == null)
+        {
+            return new ProjectResult { Succeeded = false, StatusCode = 404, Error = "Client not found." };
+        }
 
         var projectEntity = new ProjectEntity
         {
@@ -32,8 +51,10 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
             Description = formData.Description,
             StartDate = formData.StartDate,
             EndDate = formData.EndDate,
-            Budget = formData.Budget
+            Budget = formData.Budget,
+            ClientId = client.Id
         };
+
         var statusResult = await _statusService.GetStatusByIdAsync(1);
         var status = statusResult.Result;
 
@@ -51,8 +72,6 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
         var response = await _projectRepository.GetAllAsync
             (
                 orderByDescending: true,
-                sortBy: s => s.Created,
-                where: null,
                 include => include.User,
                 include => include.Status,
                 include => include.Client
@@ -70,8 +89,52 @@ public class ProjectService(IProjectRepository projectRepository, IStatusService
                 include => include.Status,
                 include => include.Client
             );
-        return response.Succeeded
-            ? new ProjectResult<Project> { Succeeded = true, StatusCode = 200, Result = response.Result }
-            : new ProjectResult<Project> { Succeeded = false, StatusCode = 404, Error = $"Project '{id}' was not found." };
+
+        if (!response.Succeeded || response.Result == null)
+        {
+            return new ProjectResult<Project> { Succeeded = false, StatusCode = 404, Error = $"Project '{id}' was not found." };
+        }
+
+        var projectEntity = response.Result;
+
+        var project = new Project
+        {
+            Id = projectEntity.Id,
+            ProjectName = projectEntity.ProjectName,
+            Description = projectEntity.Description,
+            StartDate = projectEntity.StartDate,
+            EndDate = projectEntity.EndDate,
+            Budget = projectEntity.Budget,
+            Client = new Client
+            {
+                Id = projectEntity.Client.Id,
+                ClientName = projectEntity.Client.ClientName
+            },
+            User = projectEntity.User != null ? new User
+            {
+                Id = projectEntity.User.Id,
+                Email = projectEntity.User.Email
+            } : null,
+            Status = new Status
+            {
+                Id = projectEntity.Status.Id,
+                StatusName = projectEntity.Status.StatusName
+            }
+        };
+
+        return new ProjectResult<Project> { Succeeded = true, StatusCode = 200, Result = project };
+    }
+
+    public async Task<bool> DeleteProjectAsync(int id)
+    {
+        var projectEntity = await _projectRepository.GetAsync(
+            where: x => x.Id == id.ToString()
+        );
+        if (projectEntity.Result == null)
+        {
+            return false;
+        }
+        await _projectRepository.RemoveAsync(projectEntity.Result);
+        return true;
     }
 }
