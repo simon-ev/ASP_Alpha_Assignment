@@ -72,12 +72,12 @@ public class ProjectService : IProjectService
         var response = await _projectRepository.GetAllAsync
             (
                 orderByDescending: true,
-                include => include.User,
+                include => include.User != null, 
                 include => include.Status,
                 include => include.Client
             );
 
-        return new ProjectResult<IEnumerable<Project>> { Succeeded = true, StatusCode = 200, Result = response.Result };
+        return new ProjectResult<IEnumerable<Project>> { Succeeded = true, StatusCode = 200, Result =  response.Result };
     }
 
     public async Task<ProjectResult<Project>> GetProjectAsync(string id)
@@ -85,7 +85,7 @@ public class ProjectService : IProjectService
         var response = await _projectRepository.GetAsync
             (
                 where: x => x.Id == id,
-                include => include.User,
+                include => include.User != null, 
                 include => include.Status,
                 include => include.Client
             );

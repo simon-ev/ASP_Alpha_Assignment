@@ -19,7 +19,7 @@ builder.Services.AddIdentity<UserEntity, IdentityRole>(x =>
 }).AddEntityFrameworkStores<AppDbContext>().AddDefaultTokenProviders();
 builder.Services.ConfigureApplicationCookie(x =>
 {
-    x.LoginPath = "/auth/signin";
+    x.LoginPath = "/auth/login";
     x.AccessDeniedPath = "/auth/denied";
     x.Cookie.HttpOnly = true;
     x.Cookie.IsEssential = true;
@@ -59,17 +59,3 @@ app.MapControllerRoute(
 
 app.Run();
 
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapStaticAssets();
-
-app.UseRewriter(new RewriteOptions().AddRedirect("^$", "/admin/overview"));
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=Overview}/{action=Index}/{id?}")
-    .WithStaticAssets();
-
-
-app.Run();

@@ -65,7 +65,7 @@ public class UserService(IUserRepository userRepository, UserManager<UserEntity>
             return new UserResult { Succeeded = false, StatusCode = 400, Error = "Form data cannot be null." };
 
         var existsResult = await _userRepository.ExistsAsync(x => x.Email == formData.Email);
-        if (existsResult.Suceeded)
+        if (existsResult.Succeeded)
             return new UserResult { Succeeded = false, StatusCode = 409, Error = "User with same email already exist." };
 
         try

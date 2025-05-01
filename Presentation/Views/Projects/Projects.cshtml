@@ -1,15 +1,22 @@
 ﻿@model ProjectsViewModel
 @{
     ViewData["Title"] = "Projects";
+    Layout = "~/Views/Shared/_BackOfficeWrapperLayout.cshtml";
 
 }
+
+<div class="project-sorting">
+    <p class="tab active" id="all-tab">ALL [@Model.AllCount]</p>
+    <p class="tab" id="started-tab">STARTED [@Model.StartedCount]</p>
+    <p class="tab" id="completed-tab">COMPLETED [@Model.CompletedCount]</p>
+</div>
 
 <div class="project-view" id="projects">
     @if (Model.Projects != null && Model.Projects.Any())
     {
         @foreach (var project in Model.Projects)
         {
-            @await Html.PartialAsync("ListItems/_ProjectListItemPartial", project)
+            @await Html.PartialAsync("ListItems/_ProjectCardPartial", project)
         }
     }
 </div>

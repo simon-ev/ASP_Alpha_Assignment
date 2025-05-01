@@ -1,6 +1,6 @@
 ﻿@model ProjectViewModel
 
-<div class="project-cards" data-project-id="@Model.Id">
+<div class="project-cards" data-project-id="@Model.Id" data-status="@Model.Status.ToLower()>
     <div class="card-info-container">
         <img src="~/images/ProjectLogo.svg" alt="">
         <div>

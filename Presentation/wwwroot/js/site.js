@@ -1,5 +1,7 @@
-﻿document.addEventListener('DOMContentLoaded', function () {
-  
+﻿//Omformaterad av chatgpt
+
+document.addEventListener('DOMContentLoaded', function () {
+
     const addProjectDescriptionTextarea = document.getElementById('add-project-description');
     const addProjectDescriptionQuill = new Quill('#add-project-description-wysiwyg-editor', {
         modules: {
@@ -8,6 +10,38 @@
         },
         theme: 'snow'
     });
+
+
+    function filterProjects(status) {
+ 
+        document.querySelectorAll('.project-sorting .tab').forEach(tab => {
+            tab.classList.remove('active');
+        });
+
+ 
+        document.getElementById(`${status}-tab`).classList.add('active');
+
+
+        const projectItems = document.querySelectorAll('.project-item');
+        
+        projectItems.forEach(project => {
+            const projectStatus = project.getAttribute('data-status').toLowerCase();
+            if (status === 'all' || projectStatus === status) {
+                project.style.display = 'block';
+            } else {
+                project.style.display = 'none';
+            }
+        });
+    }
+
+
+    document.querySelectorAll('.project-sorting .tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            const status = this.id.replace('-tab', '');
+            filterProjects(status);
+        });
+    });
+
 
     document.querySelectorAll('.toolbar-btn').forEach(button => {
         button.addEventListener('click', function () {
@@ -27,11 +61,10 @@
         });
     });
 
+
     addProjectDescriptionQuill.on('text-change', function () {
         addProjectDescriptionTextarea.value = addProjectDescriptionQuill.root.innerHTML;
     });
-
-
 
 
     document.addEventListener('click', function (event) {
@@ -59,9 +92,6 @@
             });
         }
     });
-
-
-
 
     const showModal = (targetId) => {
         const targetElement = document.querySelector(targetId);
@@ -92,7 +122,7 @@
         });
     });
 
-    document.getElementById('modal-overlay').addEventListener('click', function (e) {
+    document.getElementById('modal-overlay')?.addEventListener('click', function (e) {
         if (e.target.id === 'modal-overlay') {
             document.querySelectorAll('.modal.modal-show').forEach(modal => {
                 modal.classList.remove('modal-show');
@@ -100,7 +130,6 @@
             document.getElementById('modal-overlay').classList.add('hidden');
         }
     });
-
 
 
     document.addEventListener('click', function (e) {
@@ -117,17 +146,33 @@
                     },
                     body: JSON.stringify(projectId)
                 })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            const card = document.querySelector(`[data-project-id="${data.id}"]`);
-                            if (card) card.remove();
-                        } else {
-                            alert(data.message || 'Failed to delete project.');
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        const card = document.querySelector(`[data-project-id="${data.id}"]`);
+                        if (card) {
+                            card.remove();
+                            updateProjectCounts(); // Update counts after deletion
                         }
-                    });
+                    } else {
+                        alert(data.message || 'Failed to delete project.');
+                    }
+                });
             }
         }
     });
-});
 
+
+    function updateProjectCounts() {
+        const allProjects = document.querySelectorAll('.project-item');
+        const startedProjects = document.querySelectorAll('.project-item[data-status="started"]');
+        const completedProjects = document.querySelectorAll('.project-item[data-status="completed"]');
+
+        document.getElementById('all-tab').textContent = `ALL [${allProjects.length}]`;
+        document.getElementById('started-tab').textContent = `STARTED [${startedProjects.length}]`;
+        document.getElementById('completed-tab').textContent = `COMPLETED [${completedProjects.length}]`;
+    }
+
+
+    updateProjectCounts();
+});
