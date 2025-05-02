@@ -10,7 +10,7 @@ public interface IProjectService
     Task<ProjectResult> CreateProjectAsync(AddProjectFormData formData);
     Task<ProjectResult<Project>> GetProjectAsync(string id);
     Task<ProjectResult<IEnumerable<Project>>> GetProjectsAsync();
-    Task<bool> DeleteProjectAsync(int id);
+    Task<bool> DeleteProjectAsync(string id);
 }
 
 public class ProjectService : IProjectService
@@ -72,12 +72,43 @@ public class ProjectService : IProjectService
         var response = await _projectRepository.GetAllAsync
             (
                 orderByDescending: true,
-                include => include.User != null, 
+                include => include.User != null,
                 include => include.Status,
                 include => include.Client
             );
 
-        return new ProjectResult<IEnumerable<Project>> { Succeeded = true, StatusCode = 200, Result =  response.Result };
+        if (!response.Succeeded || response.Result == null)
+        {
+            return new ProjectResult<IEnumerable<Project>> { Succeeded = false, StatusCode = 500, Error = "Failed to retrieve projects." };
+        }
+
+        // Mappning av Chatgpt
+        var projects = response.Result.Select(projectEntity => new Project
+        {
+            Id = projectEntity.Id,
+            ProjectName = projectEntity.ProjectName,
+            Description = projectEntity.Description,
+            StartDate = projectEntity.StartDate,
+            EndDate = projectEntity.EndDate,
+            Budget = projectEntity.Budget,
+            Client = new Client
+            {
+                Id = projectEntity.Client.Id,
+                ClientName = projectEntity.Client.ClientName
+            },
+            User = projectEntity.User != null ? new User
+            {
+                Id = projectEntity.User.Id,
+                Email = projectEntity.User.Email
+            } : null,
+            Status = new Status
+            {
+                Id = projectEntity.Status.Id,
+                StatusName = projectEntity.Status.StatusName
+            }
+        });
+
+        return new ProjectResult<IEnumerable<Project>> { Succeeded = true, StatusCode = 200, Result = projects };
     }
 
     public async Task<ProjectResult<Project>> GetProjectAsync(string id)
@@ -125,16 +156,20 @@ public class ProjectService : IProjectService
         return new ProjectResult<Project> { Succeeded = true, StatusCode = 200, Result = project };
     }
 
-    public async Task<bool> DeleteProjectAsync(int id)
+    public async Task<bool> DeleteProjectAsync(string id)
     {
-        var projectEntity = await _projectRepository.GetAsync(
-            where: x => x.Id == id.ToString()
-        );
-        if (projectEntity.Result == null)
-        {
+
+        if (string.IsNullOrEmpty(id))
             return false;
-        }
-        await _projectRepository.RemoveAsync(projectEntity.Result);
-        return true;
+
+        var projectEntity = await _projectRepository.GetAsync(
+            where: x => x.Id == id
+        );
+
+        if (projectEntity?.Result == null)
+            return false;
+
+        var deleteResult = await _projectRepository.DeleteAsync(projectEntity.Result);
+        return deleteResult.Succeeded;
     }
 }

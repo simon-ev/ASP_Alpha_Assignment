@@ -92,7 +92,7 @@ public class ProjectsController(IProjectService projectService, IStatusService s
 
         project.Result.ProjectName = model.ProjectName;
         project.Result.Description = model.Description;
-        // Add other properties as needed
+
 
         var updateResult = await _projectService.UpdateProjectAsync(project.Result);
 
