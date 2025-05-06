@@ -80,7 +80,7 @@ public class AuthController : Controller
         if (result.Succeeded)
         {
             return string.IsNullOrEmpty(returnUrl)
-                ? RedirectToAction("Index", "Projects")
+                ? RedirectToAction("Index", "BackOffice")
                 : LocalRedirect(returnUrl);
         }
 

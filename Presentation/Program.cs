@@ -23,7 +23,7 @@ builder.Services.ConfigureApplicationCookie(x =>
     x.AccessDeniedPath = "/auth/denied";
     x.Cookie.HttpOnly = true;
     x.Cookie.IsEssential = true;
-    x.Cookie.Expiration = TimeSpan.FromHours(1);
+    x.ExpireTimeSpan = TimeSpan.FromHours(1);
     x.SlidingExpiration = true;
     
 });
@@ -50,7 +50,7 @@ app.UseAuthorization();
 
 app.MapStaticAssets();
 
-app.UseRewriter(new RewriteOptions().AddRedirect("^$", "/admin/overview"));
+app.UseRewriter(new RewriteOptions().AddRedirect("^/$", "/admin/overview"));
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Projects}/{action=Index}/{id?}")

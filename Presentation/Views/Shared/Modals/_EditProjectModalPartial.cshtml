@@ -12,6 +12,7 @@
         <img class="large-logo" src="~/images/AlphaLogoLarge.svg" alt="Large Alpha Logo" />
 
         <form asp-controller="" asp-action="" method="post" novalidate class="add-project-form">
+            <input type="hidden" asp-for="Id" />
             <label for="edit-project-name">Project Name</label>
             <input type="text" id="edit-project-name" placeholder="Project Name" />
 

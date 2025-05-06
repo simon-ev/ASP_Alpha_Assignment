@@ -10,6 +10,7 @@ public interface IProjectService
     Task<ProjectResult> CreateProjectAsync(AddProjectFormData formData);
     Task<ProjectResult<Project>> GetProjectAsync(string id);
     Task<ProjectResult<IEnumerable<Project>>> GetProjectsAsync();
+    Task<ProjectResult> UpdateProjectAsync(Project project);
     Task<bool> DeleteProjectAsync(string id);
 }
 
@@ -33,7 +34,7 @@ public class ProjectService : IProjectService
             return new ProjectResult { Succeeded = false, StatusCode = 400, Error = "Not all required fields are supplied." };
         }
 
-        var clientResult = await _clientService.AddClientAsync(formData.ClientId); 
+        var clientResult = await _clientService.AddClientAsync(formData.ClientId);
         if (!clientResult.Succeeded && clientResult.StatusCode != 409)
         {
             return new ProjectResult { Succeeded = false, StatusCode = clientResult.StatusCode, Error = clientResult.Error };
@@ -45,6 +46,14 @@ public class ProjectService : IProjectService
             return new ProjectResult { Succeeded = false, StatusCode = 404, Error = "Client not found." };
         }
 
+        var statusResult = await _statusService.GetStatusByIdAsync(1);
+        if (statusResult.Result == null)
+        {
+            return new ProjectResult { Succeeded = false, StatusCode = 404, Error = "Status not found." };
+        }
+
+        var status = statusResult.Result;
+
         var projectEntity = new ProjectEntity
         {
             ProjectName = formData.ProjectName,
@@ -52,13 +61,10 @@ public class ProjectService : IProjectService
             StartDate = formData.StartDate,
             EndDate = formData.EndDate,
             Budget = formData.Budget,
-            ClientId = client.Id
+            ClientId = client.Id,
+            UserId = formData.UserId,
+            StatusId = status.Id
         };
-
-        var statusResult = await _statusService.GetStatusByIdAsync(1);
-        var status = statusResult.Result;
-
-        projectEntity.StatusId = status!.Id;
 
         var result = await _projectRepository.AddAsync(projectEntity);
 
@@ -155,6 +161,35 @@ public class ProjectService : IProjectService
 
         return new ProjectResult<Project> { Succeeded = true, StatusCode = 200, Result = project };
     }
+
+    public async Task<ProjectResult> UpdateProjectAsync(Project project)
+    {
+        //Skriven av chatgpt
+        var projectEntityResponse = await _projectRepository.GetAsync(x => x.Id == project.Id);
+        if (!projectEntityResponse.Succeeded || projectEntityResponse.Result == null)
+        {
+            return new ProjectResult
+            {
+                Succeeded = false,
+                StatusCode = 404,
+                Error = "Project not found."
+            };
+        }
+
+        var projectEntity = projectEntityResponse.Result;
+
+        projectEntity.ProjectName = project.ProjectName;
+        projectEntity.Description = project.Description;
+        projectEntity.EndDate = project.EndDate;
+        projectEntity.Budget = project.Budget;
+
+        var updateResult = await _projectRepository.UpdateAsync(projectEntity);
+
+        return updateResult.Succeeded
+            ? new ProjectResult { Succeeded = true, StatusCode = 200 }
+            : new ProjectResult { Succeeded = false, StatusCode = updateResult.StatusCode, Error = updateResult.Error };
+    }
+
 
     public async Task<bool> DeleteProjectAsync(string id)
     {

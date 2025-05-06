@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Presentation.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace Presentation.Controllers;
 
@@ -22,8 +23,8 @@ public class ProjectsController(IProjectService projectService, IStatusService s
         }
 
         var projects = serviceProjects.Result;
-        var startedProjects = projects.Where(p => p.Status.StatusName == "In Progress").ToList();
-        var completedProjects = projects.Where(p => p.Status.StatusName == "Completed").ToList();
+        var startedProjects = projects.Where(p => p.Status?.StatusName == "In Progress").ToList();
+        var completedProjects = projects.Where(p => p.Status?.StatusName == "Completed").ToList();
 
         var viewModel = new ProjectsViewModel
         {
@@ -36,7 +37,7 @@ public class ProjectsController(IProjectService projectService, IStatusService s
                 EndDate = p.EndDate,
                 Budget = p.Budget,
                 Status = p.Status.StatusName,
-                ClientName = p.Client?.ClientName
+                ClientName = p.Client.ClientName
             }),
             StartedCount = startedProjects.Count,
             CompletedCount = completedProjects.Count,
@@ -54,6 +55,17 @@ public class ProjectsController(IProjectService projectService, IStatusService s
             return BadRequest(ModelState);
         }
 
+        var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Json(new { success = false, message = "User is not authenticated." });
+        }
+
+        if (model.Clients == null || !model.Clients.Any())
+        {
+            return Json(new { success = false, message = "Client is required." });
+        }
+
         var addProjectFormData = new AddProjectFormData
         {
             ProjectName = model.ProjectName,
@@ -61,8 +73,8 @@ public class ProjectsController(IProjectService projectService, IStatusService s
             StartDate = model.StartDate,
             EndDate = model.EndDate,
             Budget = model.Budget,
-            ClientId = model.Clients?.FirstOrDefault()?.Value ?? throw new InvalidOperationException("Client is required"),
-            UserId = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? throw new InvalidOperationException("User is not authenticated"),
+            ClientId = model.Clients.First().Value,
+            UserId = userId,
             StatusId = 1
         };
 
@@ -85,13 +97,16 @@ public class ProjectsController(IProjectService projectService, IStatusService s
         }
 
         var project = await _projectService.GetProjectAsync(model.Id);
-        if (!project.Succeeded)
+        if (!project.Succeeded || project.Result == null)
         {
             return Json(new { success = false, message = "Project not found" });
         }
 
+        //Skriven av chatgpt
         project.Result.ProjectName = model.ProjectName;
         project.Result.Description = model.Description;
+        project.Result.EndDate = model.EndDate;
+        project.Result.Budget = model.Budget;
 
 
         var updateResult = await _projectService.UpdateProjectAsync(project.Result);
